@@ -1,6 +1,6 @@
 # TicTacToe
 
-After cloning the prject, run npm install in the terminal.
+After cloning the prject, go to it's folder directory and run npm install in the terminal.
 After that, run npm start to start the game and enjoy!
 
 The AI is unbeatable (at least i think, judging by my tests and knowledge :D) thus making it a little borring after a couple of tries.
