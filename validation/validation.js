@@ -22,21 +22,14 @@ const playerMoveValidator = (position, board) => {
 };
 
 
-const winnerValidator = (playerSymbol, board, winnerPatterns) => {
-
-    for(let i in winnerPatterns){
-        let counter = 0;
-        for(let j in winnerPatterns[i]){
-            if(board[winnerPatterns[i][j]] === playerSymbol){
-                counter++;
-            };
-            if(counter === 3){
-                return true;
-            };
-        };
-    };
-    return false;
-
+const winnerValidator = (symbol, board, winnerPatterns) => {
+    let boolean = false;
+    winnerPatterns.map(e => {
+        if(e.filter(el => board[el] === symbol).length === 3){
+            boolean = true;
+        }
+    });
+    return boolean;
 };
 
 const tieValidator = (board) => {

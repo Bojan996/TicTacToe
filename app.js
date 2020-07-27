@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
-const validators = require('./validation');
+const validators = require('./validation/validation');
 const initialState = require('./initialState');
+const computerHelpers = require('./computerHelpers/computerHelpers');
 
 let playersArray,
     playersObject,
@@ -59,8 +60,24 @@ const showBoard = () => {
     '  ~~~~~~~~~~~~~ \n');
 };
 
-const playerVsPlayer = (player) => {
+const otherPlayer = (curentPlayer) => {
+    return playersArray.filter(e => e !== curentPlayer).join('');
+}
 
+//i didn't put this in the computerHelpers because it runs only on the second move, i thought there is no need to export this function
+const computerSecondMove = () => {
+    const secondMovePatterns = [['11','33'], ['31','13'], ['33','11'], ['13','31']];
+    let computerPosition = Object.keys(board).filter(e => board[e] === 'X').join();
+    let secondMovePlay = secondMovePatterns.filter(e => computerPosition === e[0]);
+    if(board[secondMovePlay[0][1]] === 'O'){
+        return '22';
+    }else{
+        return secondMovePlay[0][1];
+    }
+}
+
+const playerVsPlayer = (player) => {
+    const opponent = otherPlayer(player);
     inquirer.prompt([
             {
                 type: 'input',
@@ -70,11 +87,8 @@ const playerVsPlayer = (player) => {
         ])
         .then(answers => {
             const position = answers.position.trim();
-            
-            // Checking if the player resigned
             if(position === 'resign'){
-                const winner = playersArray.filter(e => e !== player);
-                winnerLogic(winner);
+                winnerLogic(opponent);
             }else {
                 if (validators.playerMoveValidator(position, board)) {
                     board[position.replace(/ /g,'')] = playersObject[player];
@@ -85,11 +99,7 @@ const playerVsPlayer = (player) => {
                         console.log('It is a tie!');
                         return winnerLogic(false);
                     }else {
-                        if (player === playersArray[0]) {
-                            playerVsPlayer(playersArray[1]);
-                        } else {
-                            playerVsPlayer(playersArray[0]);
-                        };
+                        playerVsPlayer(opponent);
                     };
                 } else {
                     playerVsPlayer(player);
@@ -99,119 +109,37 @@ const playerVsPlayer = (player) => {
 };
 
 const computerLogic = () => {
-
     const cornerPositions = [11, 31, 13, 33];
-    const middleSidePositions = [21, 32, 23, 12];
 
-    // Finding free positions
-    let freePositions = [];
-    Object.keys(board).map(e => {
-        if(board[e] !== 'O' && board[e] !== 'X'){
-            return freePositions.push(e);
-        };
-    });
+    // Finding free positions and determining second move
+    let freePositions = Object.keys(board).filter(e => board[e] !== 'O' && board[e] !== 'X');
 
-    // Finding all possible wining patterns for the computer
-    let possibleComputerWinningPatterns = [];
-    for(let i in winnerPatterns){
-        let counter = 0;
-        for(let j in winnerPatterns[i]){
-            if(board[winnerPatterns[i][j]] === ' ' || board[winnerPatterns[i][j]] === 'X'){
-                counter++;
-            };
-            if(counter === 3){
-                possibleComputerWinningPatterns.push(winnerPatterns[i]); 
-            };
-        };
-    };
+    // Defining possible winning paterns and what move to make if attacking or defending is not available
+    let [possiblePaterns, computerMove] = computerHelpers.possiblePaterns(winnerPatterns, board);
 
-    // Defining what move to make, and possibly push an array of 2 spaces already taken by X in the win pattern
-    let computerMove = [];
-    let computerPossibleAttack = [];
-    possibleComputerWinningPatterns.map(firstEl => {
-        let counter = 0;
-        firstEl.map(secondEl => {
-            if(board[secondEl] === 'X'){
-                counter++;
-            };
-            if(board[secondEl] !== 'X'){
-                computerMove.push(secondEl);
-            };
-            if(counter === 2){
-                computerPossibleAttack.push(firstEl);
-            };
-        });
-    });
+    // Checking if there is a winning move possible
+    let computerAttack = computerHelpers.attackDefense(possiblePaterns, board, 'X');
 
-    // Determining what space is free in the possible computer attack patern
-    let computerAttack = [];
-    computerPossibleAttack.map(firstEl => {
-        firstEl.map(secondEl => {
-            if(board[secondEl] === ' '){
-                computerAttack.push(secondEl);
-            }
-        });
-    });
-
-    // Finding a possible wining pattern for the player if there are 2 O's in a row
-    let possiblePlayerWinningPatterns = [];
-    for(let i in winnerPatterns){
-        let counter = 0;
-        for(let j in winnerPatterns[i]){
-            if(board[winnerPatterns[i][j]] === 'O'){
-                counter++;
-            }
-            if(counter === 2){
-                possiblePlayerWinningPatterns.push(winnerPatterns[i]);
-            }
-        }
-    };
-
-    // Defining what position should the computer play if there is a possible player winning patern
-    let computerDefendMove = [];
-    possiblePlayerWinningPatterns.map(firstEl => {
-        firstEl.map(secondEl => {
-            if(board[secondEl] === ' '){
-                computerDefendMove.push(secondEl);
-            }
-        })
-    });
+    // Checking if there is a need for defense
+    let defenseMove = computerHelpers.attackDefense(winnerPatterns, board, 'O');
 
     // Computer plays
     if(freePositions.length === 9){
         board[cornerPositions[Math.floor(Math.random() * cornerPositions.length)]] = 'X';
     }else if(computerAttack.length > 0){
         board[computerAttack[0]] = 'X';
-    }else if(computerDefendMove.length > 0){
-        board[computerDefendMove[0]] = 'X';
+    }else if(defenseMove.length > 0){
+        board[defenseMove[0]] = 'X';
     }else if(computerMove.length > 0){
-
-        //Making the AI completely unbeatable,
-        //If you want to try to win, leave only this: board[computerMove[0]] = 'X'; in this if else statement
         if(freePositions.length === 7){
-            for(var i = 0; i < computerMove.length; i++){
-                let counter = 0;
-                for(var j = 0; j < middleSidePositions.length; j++){
-                    if(middleSidePositions[j] !== computerMove[i]){
-                        counter++;
-                    }
-                    if(counter === 4){
-                        board[computerMove[i]] = 'X';
-                        break;
-                    }
-                }
-                if(counter === 4){
-                    break;
-                }
-            };
+            board[computerSecondMove()] = 'X';
         }else {
             board[computerMove[0]] = 'X';
         }
     }else{
         board[freePositions[0]] = 'X';
     };
-    
-    // Checking winner or tie, giving the player to play
+
     showBoard();
     if (validators.winnerValidator('X', board, winnerPatterns)) {
         return winnerLogic(playersArray[0]);
@@ -225,8 +153,7 @@ const computerLogic = () => {
 };
 
 const playerComputer = (player) => {
-
-    // Checking if the computer should play
+    const opponent = otherPlayer(player);
     if (player === playersArray[0]){
         computerLogic();
     }else {
@@ -239,11 +166,8 @@ const playerComputer = (player) => {
         ])
         .then(answers => {
             const position = answers.position.trim();
-
-            // Checking if the player resigned
             if(position === 'resign'){
-                const winner = playersArray.filter(e => e !== player);
-                winnerLogic(winner);
+                winnerLogic(opponent);
             }else {
                 if (validators.playerMoveValidator(position, board)) {
                     board[position.replace(/ /g,'')] = playersObject[player];
@@ -294,8 +218,6 @@ const gameInit = () => {
                 if(answer.playerTwo === answer.playerOne){
                     answer.playerTwo = answer.playerOne + ' 2';
                 }
-
-                // Making an array, and object of users to know their symbol at any given time
                 Object.keys(answer).map(e => playersArray.push(answer[e]));
                 playersObject = {
                     [playersArray[0]]: 'X',

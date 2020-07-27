@@ -4,11 +4,15 @@
   "description": "tic tac toe cli game",
   "main": "app.js",
   "scripts": {
+    "test": "jest",
     "start": "node app.js"
   },
   "author": "Bojan Dopudja",
   "license": "ISC",
   "dependencies": {
     "inquirer": "^7.3.2"
+  },
+  "devDependencies": {
+    "jest": "^26.1.0"
   }
 }
