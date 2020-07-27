@@ -34,7 +34,19 @@ const attackDefense = (array, board, symbol) => {
     return computerMove;
 }
 
+const computerSecondMove = (currentBoard) => {
+    const secondMovePatterns = [['11','33'], ['31','13'], ['33','11'], ['13','31']];
+    let computerPosition = Object.keys(currentBoard).filter(e => currentBoard[e] === 'X').join();
+    let secondMovePlay = secondMovePatterns.filter(e => computerPosition === e[0]);
+    if(currentBoard[secondMovePlay[0][1]] === 'O'){
+        return '22';
+    }else{
+        return secondMovePlay[0][1];
+    }
+}
 
+
+exports.computerSecondMove = computerSecondMove;
 exports.attackDefense = attackDefense;
 exports.possiblePaterns = possiblePaterns;
 exports.looper = looper;

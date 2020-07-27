@@ -64,18 +64,6 @@ const otherPlayer = (curentPlayer) => {
     return playersArray.filter(e => e !== curentPlayer).join('');
 }
 
-//i didn't put this in the computerHelpers because it runs only on the second move, i thought there is no need to export this function
-const computerSecondMove = () => {
-    const secondMovePatterns = [['11','33'], ['31','13'], ['33','11'], ['13','31']];
-    let computerPosition = Object.keys(board).filter(e => board[e] === 'X').join();
-    let secondMovePlay = secondMovePatterns.filter(e => computerPosition === e[0]);
-    if(board[secondMovePlay[0][1]] === 'O'){
-        return '22';
-    }else{
-        return secondMovePlay[0][1];
-    }
-}
-
 const playerVsPlayer = (player) => {
     const opponent = otherPlayer(player);
     inquirer.prompt([
@@ -132,7 +120,7 @@ const computerLogic = () => {
         board[defenseMove[0]] = 'X';
     }else if(computerMove.length > 0){
         if(freePositions.length === 7){
-            board[computerSecondMove()] = 'X';
+            board[computerHelpers.computerSecondMove(board)] = 'X';
         }else {
             board[computerMove[0]] = 'X';
         }

@@ -108,3 +108,43 @@ test('should return no attack move and no defend move', () => {
     expect(computerHelpers.attackDefense(funcPossibleWinPaterns, testBoard, 'X')).toEqual([]);
     expect(computerHelpers.attackDefense(winnerPatterns, testBoard, 'O')).toEqual([]);
 });
+
+
+
+//TESTING THE COMPUTER SECOND MOVE
+
+test('should return 33', () => {
+    let testBoard = boardChanger([11], [22], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('33');
+
+    testBoard = boardChanger([11], [31], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('33');
+
+    testBoard = boardChanger([11], [13], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('33');
+});
+
+test('should return 31', () => {
+    let testBoard = boardChanger([13], [21], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('31');
+
+    testBoard = boardChanger([13], [12], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('31');
+
+    testBoard = boardChanger([13], [33], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('31');
+
+    testBoard = boardChanger([13], [11], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('31');
+
+    testBoard = boardChanger([13], [32], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('31');
+});
+
+test('should return 22', () => {
+    let testBoard = boardChanger([31], [13], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('22');
+
+    testBoard = boardChanger([33], [11], board);
+    expect(computerHelpers.computerSecondMove(testBoard)).toEqual('22');
+});
