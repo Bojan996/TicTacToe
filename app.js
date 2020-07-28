@@ -98,8 +98,6 @@ const playerVsPlayer = (player) => {
 
 const computerLogic = () => {
     const cornerPositions = [11, 31, 13, 33];
-
-    // Finding free positions and determining second move
     let freePositions = Object.keys(board).filter(e => board[e] !== 'O' && board[e] !== 'X');
 
     // Defining possible winning paterns and what move to make if attacking or defending is not available
