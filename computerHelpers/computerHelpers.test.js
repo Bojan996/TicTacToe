@@ -21,21 +21,12 @@ const boardChanger = (positionsX, positionsO, testBoard) => {
 }
 
 
-//CHECKING THE LOOPER
-
-test('should return 1 array with all elements of the nested array given to it, or empty array if given an empty', () => {
-    const someArray = [[1,2,3], [4,5,6], [7,8,9]];
-    expect(computerHelpers.looper(someArray)).toEqual([1,2,3,4,5,6,7,8,9]);
-    expect(computerHelpers.looper([[]])).toEqual([]);
-});
-
-
 
 //CHECKING THE POSSIBLE PATTERNS AND COMPUTER MOVE
 
 test('should return a nested array of all winning paterns, and 1 array with all of those numbers because there are no symbols on the board', () => {
     //this is what happens on the first move
-    const secondExpect = computerHelpers.looper(winnerPatterns);
+    const secondExpect = winnerPatterns.flat();
     expect(computerHelpers.possiblePaterns(winnerPatterns, board)).toEqual([winnerPatterns, secondExpect]);
 });
 
