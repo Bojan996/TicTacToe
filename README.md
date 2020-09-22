@@ -1,5 +1,7 @@
 # TicTacToe
 
+Why make a browser TicTacToe when there is so many solutions and ideas on the internet, this game is played through terminal only!
+
 After cloning the prject, go to it's folder directory and run npm install in the terminal.
 After that, run npm start to start the game and enjoy!
 
